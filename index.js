@@ -63,20 +63,38 @@ async function run() {
         const options = await allProductsCollection.find(query).toArray();
         res.send(options);
     });
-
-    // app.get("/allProducts/:id", async (req, res) => {
-    //     // const brand = req.params.brand;
-    //     const brand = req.body.brand;
-    //     const query = brand;
-
-    //     console.log(query);
-    //     const brandProduct = await allProductsCollection.find(query).toArray();
-    //     res.send(brandProduct);
-    // });
+    app.get("/category/:id", async (req, res) => {
+        const options = await allProductsCollection
+            .find({ brand: ObjectId(req.params.id) })
+            .toArray();
+        res.send(options);
+    });
 
     app.post("/allProducts", async (req, res) => {
         const product = req.body;
-        const result = await allProductsCollection.insertOne(product);
+        const { brand, ...rest } = product;
+        const data = {
+            brand: ObjectId(brand),
+            ...rest,
+        };
+        const result = await allProductsCollection.insertOne(data);
+        res.send(result);
+    });
+
+    app.put("/allProducts/:id", verifyJWT, async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: ObjectId(id) };
+        const options = { upsert: true };
+        const updateDoc = {
+            $set: {
+                ads: "advertisement",
+            },
+        };
+        const result = await allProductsCollection.updateOne(
+            filter,
+            updateDoc,
+            options
+        );
         res.send(result);
     });
 
@@ -131,6 +149,11 @@ async function run() {
     // All Users'
     app.get("/users", async (req, res) => {
         const query = {};
+        const users = await usersCollection.find(query).toArray();
+        res.send(users);
+    });
+    app.get("/seller", async (req, res) => {
+        const query = { role: "Seller" };
         const users = await usersCollection.find(query).toArray();
         res.send(users);
     });
