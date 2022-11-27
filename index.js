@@ -80,6 +80,13 @@ async function run() {
         res.send(result);
     });
 
+    app.delete("/allProducts/:id", verifyJWT, async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: ObjectId(id) };
+        const result = await allProductsCollection.deleteOne(filter);
+        res.send(result);
+    });
+
     // Booking Product
     app.get("/bookingProduct", verifyJWT, async (req, res) => {
         const email = req.query.email;
@@ -97,6 +104,13 @@ async function run() {
     app.post("/bookingProduct", async (req, res) => {
         const booking = req.body;
         const result = await bookingProductCollection.insertOne(booking);
+        res.send(result);
+    });
+
+    app.delete("/bookingsProduct/:id", verifyJWT, async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: ObjectId(id) };
+        const result = await bookingProductCollection.deleteOne(filter);
         res.send(result);
     });
 
@@ -141,24 +155,12 @@ async function run() {
         res.send(result);
     });
 
-    // Users Add Admin
-    // app.put("users/admin/:id", async (req, res) => {
-    //     const id = req.params.id;
-    //     const filter = { _id: ObjectId(id) };
-    //     const editedRole = req.body.items;
-    //     const options = { upsert: true };
-    //     const updatedDoc = {
-    //         $set: {
-    //             role: editedRole.role,
-    //         },
-    //     };
-    //     const result = await usersCollection.updateOne(
-    //         filter,
-    //         updatedDoc,
-    //         options
-    //     );
-    //     res.send(result);
-    // });
+    app.delete("/users/:id", verifyJWT, async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: ObjectId(id) };
+        const result = await usersCollection.deleteOne(filter);
+        res.send(result);
+    });
 }
 run().catch((err) => console.error(err));
 
