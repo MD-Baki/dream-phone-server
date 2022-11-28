@@ -63,6 +63,7 @@ async function run() {
         const options = await allProductsCollection.find(query).toArray();
         res.send(options);
     });
+
     app.get("/category/:id", async (req, res) => {
         const options = await allProductsCollection
             .find({ brand: ObjectId(req.params.id) })
@@ -156,6 +157,23 @@ async function run() {
         const query = { role: "Seller" };
         const users = await usersCollection.find(query).toArray();
         res.send(users);
+    });
+
+    app.put("/seller/:id", verifyJWT, async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: ObjectId(id) };
+        const options = { upsert: true };
+        const updateDoc = {
+            $set: {
+                verify: "verified",
+            },
+        };
+        const result = await usersCollection.updateOne(
+            filter,
+            updateDoc,
+            options
+        );
+        res.send(result);
     });
 
     app.get("/users/admin/:email", async (req, res) => {
