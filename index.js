@@ -133,6 +133,13 @@ async function run() {
         res.send(result);
     });
 
+    app.delete("/saveProduct/:id", async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: ObjectId(id) };
+        const result = await saveProductCollection.deleteOne(filter);
+        res.send(result);
+    });
+
     // Booking Product
     app.get("/bookingProduct", verifyJWT, async (req, res) => {
         const email = req.query.email;
@@ -170,10 +177,8 @@ async function run() {
     // Payment
     app.post("/create-payment-intent", async (req, res) => {
         const booking = req.body.items;
-        // console.log(booking);
+
         const amount = parseInt(booking.price);
-        // const amount = price * 100;
-        console.log(amount);
 
         const paymentIntent = await stripe.paymentIntents.create({
             amount: amount,
